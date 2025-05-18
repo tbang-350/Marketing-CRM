@@ -31,13 +31,16 @@
                             <x-base.form-check.input type="checkbox" />
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            COMPANY
+                            COMPANY NAME
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            CONTACT
+                            CONTACT PERSON
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
                             EMAIL
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                            PHONE
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             STATUS
@@ -64,12 +67,14 @@
                             <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $client->email }}
                             </x-base.table.td>
+                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $client->phone }}
+                            </x-base.table.td>
                             <x-base.table.td class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div @class([
                                     'flex items-center justify-center whitespace-nowrap',
                                     'text-success' => $client->status === 'active',
                                     'text-danger' => $client->status === 'inactive',
-                                    'text-warning' => $client->status === 'prospect',
                                 ])>
                                     <x-base.lucide
                                         class="mr-2 h-4 w-4"
@@ -113,50 +118,59 @@
             <x-base.dialog.title>
                 <h2 class="mr-auto text-base font-medium">Add New Client</h2>
             </x-base.dialog.title>
-            <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
-                <div class="col-span-12">
-                    <x-base.form-label for="company-name">Company Name</x-base.form-label>
-                    <x-base.form-input id="company-name" type="text" name="company_name" placeholder="Enter company name" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="contact-person">Contact Person</x-base.form-label>
-                    <x-base.form-input id="contact-person" type="text" name="contact_person" placeholder="Enter contact person" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="email">Email</x-base.form-label>
-                    <x-base.form-input id="email" type="email" name="email" placeholder="Enter email" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="phone">Phone</x-base.form-label>
-                    <x-base.form-input id="phone" type="tel" name="phone" placeholder="Enter phone" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="status">Status</x-base.form-label>
-                    <x-base.form-select id="status" name="status">
-                        <option value="prospect">Prospect</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </x-base.form-select>
-                </div>
-            </x-base.dialog.description>
-            <x-base.dialog.footer class="text-right">
-                <x-base.button
-                    class="mr-1 w-32"
-                    data-tw-dismiss="modal"
-                    type="button"
-                    variant="outline-secondary"
-                >
-                    Cancel
-                </x-base.button>
-                <x-base.button
-                    class="w-32"
-                    type="button"
-                    variant="primary"
-                    onclick="submitAddForm()"
-                >
-                    Save
-                </x-base.button>
-            </x-base.dialog.footer>
+            <form id="add-client-form">
+                <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
+                    <div class="col-span-12">
+                        <x-base.form-label for="company-name">Company Name</x-base.form-label>
+                        <x-base.form-input id="company-name" type="text" name="company_name" placeholder="Enter company name" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="contact-person">Contact Person</x-base.form-label>
+                        <x-base.form-input id="contact-person" type="text" name="contact_person" placeholder="Enter contact person" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="email">Email</x-base.form-label>
+                        <x-base.form-input id="email" type="email" name="email" placeholder="Enter email" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="phone">Phone</x-base.form-label>
+                        <x-base.form-input id="phone" type="tel" name="phone" placeholder="Enter phone" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="address">Address</x-base.form-label>
+                        <x-base.form-textarea id="address" name="address" placeholder="Enter address" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="status">Status</x-base.form-label>
+                        <x-base.form-select id="status" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </x-base.form-select>
+                    </div>
+                </x-base.dialog.description>
+                <x-base.dialog.footer class="text-right">
+                    <x-base.button
+                        class="mr-1 w-32"
+                        data-tw-dismiss="modal"
+                        type="button"
+                        variant="outline-secondary"
+                    >
+                        Cancel
+                    </x-base.button>
+                    <x-base.button
+                        class="w-32"
+                        type="button"
+                        variant="primary"
+                        onclick="submitAddForm()"
+                        id="add-client-submit"
+                    >
+                        <span class="flex items-center justify-center">
+                            <span class="mr-2">Save</span>
+                            <x-base.lucide class="hidden h-4 w-4 animate-spin" icon="Loader" id="add-client-spinner" />
+                        </span>
+                    </x-base.button>
+                </x-base.dialog.footer>
+            </form>
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Add Client Modal -->
@@ -167,28 +181,60 @@
             <x-base.dialog.title>
                 <h2 class="mr-auto text-base font-medium">Edit Client</h2>
             </x-base.dialog.title>
-            <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
+            <form id="edit-client-form">
                 <input type="hidden" name="client_id" id="edit_client_id">
-                <!-- Same fields as add form -->
-            </x-base.dialog.description>
-            <x-base.dialog.footer class="text-right">
-                <x-base.button
-                    class="mr-1 w-32"
-                    data-tw-dismiss="modal"
-                    type="button"
-                    variant="outline-secondary"
-                >
-                    Cancel
-                </x-base.button>
-                <x-base.button
-                    class="w-32"
-                    type="button"
-                    variant="primary"
-                    onclick="submitEditForm()"
-                >
-                    Update
-                </x-base.button>
-            </x-base.dialog.footer>
+                <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-company-name">Company Name</x-base.form-label>
+                        <x-base.form-input id="edit-company-name" type="text" name="company_name" placeholder="Enter company name" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-contact-person">Contact Person</x-base.form-label>
+                        <x-base.form-input id="edit-contact-person" type="text" name="contact_person" placeholder="Enter contact person" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-email">Email</x-base.form-label>
+                        <x-base.form-input id="edit-email" type="email" name="email" placeholder="Enter email" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-phone">Phone</x-base.form-label>
+                        <x-base.form-input id="edit-phone" type="tel" name="phone" placeholder="Enter phone" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-address">Address</x-base.form-label>
+                        <x-base.form-textarea id="edit-address" name="address" placeholder="Enter address" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="edit-status">Status</x-base.form-label>
+                        <x-base.form-select id="edit-status" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </x-base.form-select>
+                    </div>
+                </x-base.dialog.description>
+                <x-base.dialog.footer class="text-right">
+                    <x-base.button
+                        class="mr-1 w-32"
+                        data-tw-dismiss="modal"
+                        type="button"
+                        variant="outline-secondary"
+                    >
+                        Cancel
+                    </x-base.button>
+                    <x-base.button
+                        class="w-32"
+                        type="button"
+                        variant="primary"
+                        onclick="submitEditForm()"
+                        id="edit-client-submit"
+                    >
+                        <span class="flex items-center justify-center">
+                            <span class="mr-2">Update</span>
+                            <x-base.lucide class="hidden h-4 w-4 animate-spin" icon="Loader" id="edit-client-spinner" />
+                        </span>
+                    </x-base.button>
+                </x-base.dialog.footer>
+            </form>
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Edit Client Modal -->
@@ -246,8 +292,12 @@
                     type="button"
                     variant="danger"
                     onclick="confirmDelete()"
+                    id="delete-client-submit"
                 >
-                    Delete
+                    <span class="flex items-center justify-center">
+                        <span class="mr-2">Delete</span>
+                        <x-base.lucide class="hidden h-4 w-4 animate-spin" icon="Loader" id="delete-client-spinner" />
+                    </span>
                 </x-base.button>
             </div>
         </x-base.dialog.panel>
@@ -259,6 +309,20 @@
 <script>
     let currentClientId = null;
 
+    function showSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = true;
+        spinner.classList.remove('hidden');
+    }
+
+    function hideSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = false;
+        spinner.classList.add('hidden');
+    }
+
     function openEditModal(clientId) {
         currentClientId = clientId;
         fetch(`/api/clients/${clientId}`)
@@ -266,6 +330,13 @@
             .then(data => {
                 // Populate form fields
                 document.getElementById('edit_client_id').value = clientId;
+                document.getElementById('edit-company-name').value = data.company_name;
+                document.getElementById('edit-contact-person').value = data.contact_person;
+                document.getElementById('edit-email').value = data.email;
+                document.getElementById('edit-phone').value = data.phone;
+                document.getElementById('edit-address').value = data.address;
+                document.getElementById('edit-status').value = data.status;
+
                 // Show modal
                 const modal = document.getElementById('edit-client-modal');
                 modal.classList.remove('hidden');
@@ -277,14 +348,45 @@
             .then(response => response.json())
             .then(data => {
                 const details = document.getElementById('clientDetails');
-                // Populate details
+                details.innerHTML = `
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-6">
+                            <p class="font-medium">Company Name:</p>
+                            <p>${data.company_name}</p>
+                        </div>
+                        <div class="col-span-6">
+                            <p class="font-medium">Contact Person:</p>
+                            <p>${data.contact_person}</p>
+                        </div>
+                        <div class="col-span-6">
+                            <p class="font-medium">Email:</p>
+                            <p>${data.email}</p>
+                        </div>
+                        <div class="col-span-6">
+                            <p class="font-medium">Phone:</p>
+                            <p>${data.phone}</p>
+                        </div>
+                        <div class="col-span-12">
+                            <p class="font-medium">Address:</p>
+                            <p>${data.address}</p>
+                        </div>
+                        <div class="col-span-6">
+                            <p class="font-medium">Status:</p>
+                            <p>${data.status}</p>
+                        </div>
+                    </div>
+                `;
                 const modal = document.getElementById('view-client-modal');
                 modal.classList.remove('hidden');
             });
     }
 
     function submitAddForm() {
-        const formData = new FormData(document.getElementById('add-client-modal').querySelector('form'));
+        const form = document.getElementById('add-client-form');
+        const formData = new FormData(form);
+
+        showSpinner('add-client-submit', 'add-client-spinner');
+
         fetch('/api/clients', {
             method: 'POST',
             headers: {
@@ -295,14 +397,26 @@
         })
         .then(response => response.json())
         .then(data => {
+            hideSpinner('add-client-submit', 'add-client-spinner');
             if (data.status === 'success') {
                 window.location.reload();
+            } else {
+                alert(data.message || 'An error occurred while saving the client.');
             }
+        })
+        .catch(error => {
+            hideSpinner('add-client-submit', 'add-client-spinner');
+            alert('An error occurred while saving the client.');
+            console.error('Error:', error);
         });
     }
 
     function submitEditForm() {
-        const formData = new FormData(document.getElementById('edit-client-modal').querySelector('form'));
+        const form = document.getElementById('edit-client-form');
+        const formData = new FormData(form);
+
+        showSpinner('edit-client-submit', 'edit-client-spinner');
+
         fetch(`/api/clients/${currentClientId}`, {
             method: 'PUT',
             headers: {
@@ -313,9 +427,17 @@
         })
         .then(response => response.json())
         .then(data => {
+            hideSpinner('edit-client-submit', 'edit-client-spinner');
             if (data.status === 'success') {
                 window.location.reload();
+            } else {
+                alert(data.message || 'An error occurred while updating the client.');
             }
+        })
+        .catch(error => {
+            hideSpinner('edit-client-submit', 'edit-client-spinner');
+            alert('An error occurred while updating the client.');
+            console.error('Error:', error);
         });
     }
 
@@ -326,6 +448,8 @@
     }
 
     function confirmDelete() {
+        showSpinner('delete-client-submit', 'delete-client-spinner');
+
         fetch(`/api/clients/${currentClientId}`, {
             method: 'DELETE',
             headers: {
@@ -334,9 +458,17 @@
         })
         .then(response => response.json())
         .then(data => {
+            hideSpinner('delete-client-submit', 'delete-client-spinner');
             if (data.status === 'success') {
                 window.location.reload();
+            } else {
+                alert(data.message || 'An error occurred while deleting the client.');
             }
+        })
+        .catch(error => {
+            hideSpinner('delete-client-submit', 'delete-client-spinner');
+            alert('An error occurred while deleting the client.');
+            console.error('Error:', error);
         });
     }
 </script>

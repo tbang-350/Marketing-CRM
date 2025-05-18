@@ -112,45 +112,51 @@
             <x-base.dialog.title>
                 <h2 class="mr-auto text-base font-medium">Add New Influencer</h2>
             </x-base.dialog.title>
-            <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
-                <div class="col-span-12">
-                    <x-base.form-label for="name">Name</x-base.form-label>
-                    <x-base.form-input id="name" type="text" name="name" placeholder="Enter name" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="email">Email</x-base.form-label>
-                    <x-base.form-input id="email" type="email" name="email" placeholder="Enter email" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="phone">Phone</x-base.form-label>
-                    <x-base.form-input id="phone" type="tel" name="phone" placeholder="Enter phone" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="status">Status</x-base.form-label>
-                    <x-base.form-select id="status" name="status">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </x-base.form-select>
-                </div>
-            </x-base.dialog.description>
-            <x-base.dialog.footer class="text-right">
-                <x-base.button
-                    class="mr-1 w-32"
-                    data-tw-dismiss="modal"
-                    type="button"
-                    variant="outline-secondary"
-                >
-                    Cancel
-                </x-base.button>
-                <x-base.button
-                    class="w-32"
-                    type="button"
-                    variant="primary"
-                    onclick="submitAddForm()"
-                >
-                    Save
-                </x-base.button>
-            </x-base.dialog.footer>
+            <form id="add-influencer-form">
+                <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
+                    <div class="col-span-12">
+                        <x-base.form-label for="name">Name</x-base.form-label>
+                        <x-base.form-input id="name" type="text" name="name" placeholder="Enter name" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="email">Email</x-base.form-label>
+                        <x-base.form-input id="email" type="email" name="email" placeholder="Enter email" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="phone">Phone</x-base.form-label>
+                        <x-base.form-input id="phone" type="tel" name="phone" placeholder="Enter phone" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="status">Status</x-base.form-label>
+                        <x-base.form-select id="status" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </x-base.form-select>
+                    </div>
+                </x-base.dialog.description>
+                <x-base.dialog.footer class="text-right">
+                    <x-base.button
+                        class="mr-1 w-32"
+                        data-tw-dismiss="modal"
+                        type="button"
+                        variant="outline-secondary"
+                    >
+                        Cancel
+                    </x-base.button>
+                    <x-base.button
+                        class="w-32"
+                        type="button"
+                        variant="primary"
+                        onclick="submitAddForm()"
+                        id="add-influencer-submit"
+                    >
+                        <span class="flex items-center justify-center">
+                            <span class="mr-2">Save</span>
+                            <x-base.lucide class="hidden h-4 w-4 animate-spin" icon="Loader" id="add-influencer-spinner" />
+                        </span>
+                    </x-base.button>
+                </x-base.dialog.footer>
+            </form>
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Add Influencer Modal -->
@@ -253,6 +259,20 @@
 <script>
     let currentInfluencerId = null;
 
+    function showSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = true;
+        spinner.classList.remove('hidden');
+    }
+
+    function hideSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = false;
+        spinner.classList.add('hidden');
+    }
+
     function openEditModal(influencerId) {
         currentInfluencerId = influencerId;
         fetch(`/api/influencers/${influencerId}`)
@@ -278,7 +298,11 @@
     }
 
     function submitAddForm() {
-        const formData = new FormData(document.getElementById('add-influencer-modal').querySelector('form'));
+        const form = document.getElementById('add-influencer-form');
+        const formData = new FormData(form);
+
+        showSpinner('add-influencer-submit', 'add-influencer-spinner');
+
         fetch('/api/influencers', {
             method: 'POST',
             headers: {
@@ -289,9 +313,17 @@
         })
         .then(response => response.json())
         .then(data => {
+            hideSpinner('add-influencer-submit', 'add-influencer-spinner');
             if (data.status === 'success') {
                 window.location.reload();
+            } else {
+                alert(data.message || 'An error occurred while saving the influencer.');
             }
+        })
+        .catch(error => {
+            hideSpinner('add-influencer-submit', 'add-influencer-spinner');
+            alert('An error occurred while saving the influencer.');
+            console.error('Error:', error);
         });
     }
 

@@ -123,58 +123,64 @@
             <x-base.dialog.title>
                 <h2 class="mr-auto text-base font-medium">Create New Campaign</h2>
             </x-base.dialog.title>
-            <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
-                <div class="col-span-12">
-                    <x-base.form-label for="campaign-name">Campaign Name</x-base.form-label>
-                    <x-base.form-input id="campaign-name" type="text" name="name" placeholder="Enter campaign name" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="client">Client</x-base.form-label>
-                    <x-base.form-select id="client" name="client_id">
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}">{{ $client->company_name }}</option>
-                        @endforeach
-                    </x-base.form-select>
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="start-date">Start Date</x-base.form-label>
-                    <x-base.form-input id="start-date" type="date" name="start_date" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="end-date">End Date</x-base.form-label>
-                    <x-base.form-input id="end-date" type="date" name="end_date" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="budget">Budget</x-base.form-label>
-                    <x-base.form-input id="budget" type="number" name="budget" step="0.01" placeholder="Enter budget" />
-                </div>
-                <div class="col-span-12">
-                    <x-base.form-label for="status">Status</x-base.form-label>
-                    <x-base.form-select id="status" name="status">
-                        <option value="draft">Draft</option>
-                        <option value="active">Active</option>
-                        <option value="completed">Completed</option>
-                    </x-base.form-select>
-                </div>
-            </x-base.dialog.description>
-            <x-base.dialog.footer class="text-right">
-                <x-base.button
-                    class="mr-1 w-32"
-                    data-tw-dismiss="modal"
-                    type="button"
-                    variant="outline-secondary"
-                >
-                    Cancel
-                </x-base.button>
-                <x-base.button
-                    class="w-32"
-                    type="button"
-                    variant="primary"
-                    onclick="submitAddForm()"
-                >
-                    Save
-                </x-base.button>
-            </x-base.dialog.footer>
+            <form id="add-campaign-form">
+                <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
+                    <div class="col-span-12">
+                        <x-base.form-label for="campaign-name">Campaign Name</x-base.form-label>
+                        <x-base.form-input id="campaign-name" type="text" name="name" placeholder="Enter campaign name" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="client">Client</x-base.form-label>
+                        <x-base.form-select id="client" name="client_id" required>
+                            @foreach($clients as $client)
+                                <option value="{{ $client->id }}">{{ $client->company_name }}</option>
+                            @endforeach
+                        </x-base.form-select>
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="start-date">Start Date</x-base.form-label>
+                        <x-base.form-input id="start-date" type="date" name="start_date" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="end-date">End Date</x-base.form-label>
+                        <x-base.form-input id="end-date" type="date" name="end_date" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="budget">Budget</x-base.form-label>
+                        <x-base.form-input id="budget" type="number" name="budget" step="0.01" placeholder="Enter budget" required />
+                    </div>
+                    <div class="col-span-12">
+                        <x-base.form-label for="status">Status</x-base.form-label>
+                        <x-base.form-select id="status" name="status" required>
+                            <option value="draft">Draft</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </x-base.form-select>
+                    </div>
+                </x-base.dialog.description>
+                <x-base.dialog.footer class="text-right">
+                    <x-base.button
+                        class="mr-1 w-32"
+                        data-tw-dismiss="modal"
+                        type="button"
+                        variant="outline-secondary"
+                    >
+                        Cancel
+                    </x-base.button>
+                    <x-base.button
+                        class="w-32"
+                        type="button"
+                        variant="primary"
+                        onclick="submitAddForm()"
+                        id="add-campaign-submit"
+                    >
+                        <span class="flex items-center justify-center">
+                            <span class="mr-2">Save</span>
+                            <x-base.lucide class="hidden h-4 w-4 animate-spin" icon="Loader" id="add-campaign-spinner" />
+                        </span>
+                    </x-base.button>
+                </x-base.dialog.footer>
+            </form>
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Add Campaign Modal -->
@@ -365,6 +371,20 @@
 <script>
     let currentCampaignId = null;
 
+    function showSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = true;
+        spinner.classList.remove('hidden');
+    }
+
+    function hideSpinner(buttonId, spinnerId) {
+        const button = document.getElementById(buttonId);
+        const spinner = document.getElementById(spinnerId);
+        button.disabled = false;
+        spinner.classList.add('hidden');
+    }
+
     function openEditModal(campaignId) {
         currentCampaignId = campaignId;
         fetch(`/api/campaigns/${campaignId}`)
@@ -403,7 +423,11 @@
     }
 
     function submitAddForm() {
-        const formData = new FormData(document.getElementById('add-campaign-modal').querySelector('form'));
+        const form = document.getElementById('add-campaign-form');
+        const formData = new FormData(form);
+
+        showSpinner('add-campaign-submit', 'add-campaign-spinner');
+
         fetch('/api/campaigns', {
             method: 'POST',
             headers: {
@@ -414,9 +438,17 @@
         })
         .then(response => response.json())
         .then(data => {
+            hideSpinner('add-campaign-submit', 'add-campaign-spinner');
             if (data.status === 'success') {
                 window.location.reload();
+            } else {
+                alert(data.message || 'An error occurred while saving the campaign.');
             }
+        })
+        .catch(error => {
+            hideSpinner('add-campaign-submit', 'add-campaign-spinner');
+            alert('An error occurred while saving the campaign.');
+            console.error('Error:', error);
         });
     }
 
