@@ -745,6 +745,37 @@ class SideMenu
                         'title' => 'Image Zoom'
                     ]
                 ]
+            ],
+            'divider',
+            'marketing-agency' => [
+                'icon' => 'briefcase',
+                'title' => 'Marketing Agency',
+                'sub_menu' => [
+                    'clients' => [
+                        'icon' => 'users',
+                        'route_name' => 'clients.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Clients'
+                    ],
+                    'campaigns' => [
+                        'icon' => 'trending-up',
+                        'route_name' => 'campaigns.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Campaigns'
+                    ],
+                    'influencers' => [
+                        'icon' => 'star',
+                        'route_name' => 'influencers.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Influencers'
+                    ]
+                ]
             ]
         ];
     }

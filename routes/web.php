@@ -101,5 +101,10 @@ Route::middleware('auth')->group(function () {
         Route::get('chart-page', 'chart')->name('chart');
         Route::get('slider-page', 'slider')->name('slider');
         Route::get('image-zoom-page', 'imageZoom')->name('image-zoom');
+
+        // Marketing Agency Routes
+        Route::get('clients', 'clients')->name('clients.index');
+        Route::get('campaigns', 'campaigns')->name('campaigns.index');
+        Route::get('influencers', 'influencers')->name('influencers.index');
     });
 });

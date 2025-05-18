@@ -668,4 +668,33 @@ class PageController extends Controller
     {
         return view('pages/image-zoom');
     }
+
+    /**
+     * Show clients page.
+     */
+    public function clients(): View
+    {
+        $clients = \App\Models\Client::paginate(10);
+        return view('clients/index', compact('clients'));
+    }
+
+    /**
+     * Show campaigns page.
+     */
+    public function campaigns(): View
+    {
+        $campaigns = \App\Models\Campaign::with('client')->paginate(10);
+        $clients = \App\Models\Client::all();
+        $influencers = \App\Models\Influencer::all();
+        return view('campaigns/index', compact('campaigns', 'clients', 'influencers'));
+    }
+
+    /**
+     * Show influencers page.
+     */
+    public function influencers(): View
+    {
+        $influencers = \App\Models\Influencer::paginate(10);
+        return view('influencers/index', compact('influencers'));
+    }
 }
